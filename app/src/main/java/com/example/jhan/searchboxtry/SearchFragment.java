@@ -296,6 +296,13 @@ public class SearchFragment extends ListFragment {
             return true;
         }
 
+        if(id == R.id.menu_item_placePicker) {
+
+            Intent i = new Intent(getActivity(), PlacePickerActivity.class);
+            startActivity(i);
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
