@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +21,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.yelp.clientlib.connection.YelpAPI;
 import com.yelp.clientlib.connection.YelpAPIFactory;
 import com.yelp.clientlib.entities.Business;
@@ -39,7 +44,64 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
-public class SearchFragment extends Fragment {
+public class SearchFragment extends ListFragment {
+
+    static int[] initImage = new int[20];
+    static String[] initName = new String[20];
+    static String[] initRate = new String[20];
+    static String[] initAddress = new String[20];
+/*
+    // Array of strings storing country names
+    String[] countries = new String[] {
+            "India",
+            "Pakistan",
+            "Sri Lanka",
+            "China",
+            "Bangladesh",
+            "Nepal",
+            "Afghanistan",
+            "North Korea",
+            "South Korea",
+            "Japan"
+    };
+
+    // Array of integers points to images stored in /res/drawable/
+    int[] flags = new int[]{
+            R.drawable.india,
+            R.drawable.pakistan,
+            R.drawable.srilanka,
+            R.drawable.china,
+            R.drawable.bangladesh,
+            R.drawable.nepal,
+            R.drawable.afghanistan,
+            R.drawable.nkorea,
+            R.drawable.skorea,
+            R.drawable.japan
+    };
+
+    // Array of strings to store currencies
+    String[] currency = new String[]{
+            "Indian Rupee",
+            "Pakistani Rupee",
+            "Sri Lankan Rupee",
+            "Renminbi",
+            "Bangladeshi Taka",
+            "Nepalese Rupee",
+            "Afghani",
+            "North Korean Won",
+            "South Korean Won",
+            "Japanese Yen"
+    };
+
+
+*/
+    ArrayList<String> imageUrlList = new ArrayList<String>();
+    ArrayList<String> nameList = new ArrayList<String>();
+    ArrayList<Double> ratingList = new ArrayList<Double>();
+    ArrayList<ArrayList<String>> addressList = new ArrayList<>();
+    String strTerm; //search term
+    SimpleAdapter adapter;
+
 
     private static final String TAG = "SearchFragment";
 
@@ -52,6 +114,14 @@ public class SearchFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
+
+
+        for(int i = 0; i < 20; i++) {
+            initImage[i] = R.drawable.blank;
+            initName[i] = "";
+            initRate[i] = "";
+            initAddress[i] = "";
+        }
 
 //        updateItems();
 //
@@ -74,20 +144,103 @@ public class SearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_search, container, false);
+       // View v = inflater.inflate(R.layout.fragment_search, container, false);
 //        mPhotoRecyclerView = (RecyclerView) v
 //                .findViewById(R.id.fragment_photo_gallery_recycler_view);
 //        mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
 //
 //        setupAdapter();
 
-        return v;
+       // return v;
+
+
+
+        // Each row in the list stores country name, currency and flag
+
+        List<HashMap<String,String>> aList = new ArrayList<HashMap<String,String>>();
+        for(int i=0;i<20;i++){
+            HashMap<String, String> hm = new HashMap<String,String>();
+            hm.put("name", initName[i]);
+            hm.put("rate", initRate[i]);
+            hm.put("address", initAddress[i]);
+            hm.put("image", Integer.toString(initImage[i]));
+            aList.add(hm);
+        }
+
+        // Keys used in Hashmap
+        String[] from = { "image","name","rate", "address" };
+
+        // Ids of views in listview_layout
+        int[] to = { R.id.image, R.id.name, R.id.rate, R.id.address};
+
+        // Instantiating an adapter to store each items
+        // R.layout.listview_layout defines the layout of each item
+        //SimpleAdapter adapter = new SimpleAdapter(getActivity().getBaseContext(), aList, R.layout.listview_layout, from, to) {
+        adapter = new SimpleAdapter(getActivity().getBaseContext(), aList, R.layout.listview_layout, from, to) {
+            @Override
+            public View getView (int position, View convertView, ViewGroup parent) {
+
+
+                View view = super.getView(position, convertView, parent);
+                if(imageUrlList.size() > 0) {
+                    if(imageUrlList.size() > position) {
+                        ImageLoader imageLoader = ImageLoader.getInstance();
+                        ImageView im = (ImageView) view.findViewById(R.id.image);
+                        imageLoader.displayImage(imageUrlList.get(position), im);
+
+                        TextView nameView = (TextView) view.findViewById(R.id.name);
+                        nameView.setText(nameList.get(position));
+
+                        TextView rateView = (TextView) view.findViewById(R.id.rate);
+                        rateView.setText(ratingList.get(position).toString());
+
+                        TextView addressView = (TextView) view.findViewById(R.id.address);
+                        /*
+                        String addressShow = "";
+                        Log.d(TAG, addressList.get(position).toString());
+                        Log.d(TAG, addressList.get(position).get(0));
+                        Log.d(TAG, addressList.get(position).get(1));
+                        for(int i = 0; i < 2; i++) {
+                            addressShow += addressList.get(position).get(i) + " ";
+                        }
+                        addressView.setText(addressShow);
+                        */
+                        addressView.setText(addressList.get(position).toString().replaceAll("\\[|\\]", "").replaceAll(", USA", ""));
+                    }
+                    else {  // if there are less than 20 items return from yelp api, display the default image
+                        ImageLoader imageLoader = ImageLoader.getInstance();
+                        ImageView im = (ImageView) view.findViewById(R.id.image);
+                        //imageLoader.displayImage("drawable://" + R.drawable.blank, im);
+                        im.setImageResource(R.drawable.blank);
+
+                        TextView nameView = (TextView) view.findViewById(R.id.name);
+                        nameView.setText("");
+
+                        TextView rateView = (TextView) view.findViewById(R.id.rate);
+                        rateView.setText("");
+                    }
+                }
+
+                return view;
+            }
+        };
+
+        setListAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
+        return super.onCreateView(inflater, container, savedInstanceState);
+
+
+
+
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         super.onCreateOptionsMenu(menu, menuInflater);
         menuInflater.inflate(R.menu.fragment_search_menu, menu);
+
+        //1. search menu
         MenuItem searchItem = menu.findItem(R.id.menu_item_search);
         final SearchView searchView = (SearchView) searchItem.getActionView();
 
@@ -97,7 +250,8 @@ public class SearchFragment extends Fragment {
                 Log.d(TAG, "QueryTextSubmit: " + s);
                 QueryPreferences.setStoredQuery(getActivity(), s);
                 //updateItems();
-                yelpSearch ();
+                strTerm = s;
+                yelpSearch (strTerm, 0);
                 return true;
             }
 
@@ -115,24 +269,55 @@ public class SearchFragment extends Fragment {
                 //searchView.setQuery(query, false);
             }
         });
+
+
     }
 
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        //2. sortBydistance menu
+        if (id == R.id.menu_item_sortDistace) {
+            if(strTerm != null) {
+                yelpSearch(strTerm, 1);
+            }
+            return true;
+        }
+
+        //3. sortByrelevance menu
+        if (id == R.id.menu_item_sortRelevance) {
+            if(strTerm != null) {
+                yelpSearch(strTerm, 0);
+            }
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+
+
     //hjw YelpAPI TRY
-    public void yelpSearch ()  {
+    public void yelpSearch (String term, int sort)  {
         YelpAPIFactory apiFactory = new YelpAPIFactory("U3AjEtYCpkP417JC5bnijQ", "Su_kVdBFnF0REg_GhEJgYgYPwoY", "2xOFoqh0dkmi9fSU8GRhZhMGqWrFmMuO", "vmfA12m3OqUg1XeLaoCZvNqfX5k");
         YelpAPI yelpAPI = apiFactory.createAPI();
 
         Map<String, String> params = new HashMap<>();
 
 // general params
-        params.put("term", "target");
-        params.put("limit", "3");
-
+        params.put("term", term);
+        params.put("limit", "20");
+        params.put("sort", String.valueOf(sort)); //Sort mode: 0=Best matched (default), 1=Distance, 2=Highest Rated. The rating sort is not strictly sorted by the rating value, but by an adjusted rating value that takes into account the number of ratings, similar to a bayesian average. This is so a business with 1 rating of 5 stars doesn’t immediately jump to the top.
+        params.put("radius_filter", "16093.4"); // in meters, this is 10 miles
 // locale params
         params.put("lang", "fr");
 
-        Call<SearchResponse> call = yelpAPI.search("San Francisco", params);
+
+        Call<SearchResponse> call = yelpAPI.search("San Jose", params);
         try{
             Callback<SearchResponse> callback = new Callback<SearchResponse>() {
                 @Override
@@ -142,14 +327,29 @@ public class SearchFragment extends Fragment {
 
                     int totalNumberOfResult = searchResponse.total();
                     ArrayList<Business> businesses = searchResponse.businesses();
+
+
                     String businessName = businesses.get(0).name();  // "JapaCurry Truck"
                     Double rating = businesses.get(0).rating();  // 4.0
                     Log.d(TAG,"totalNumber: " + totalNumberOfResult);
                     Log.d(TAG,"businessName: " + businessName);
                     Log.d(TAG,"rating: " + rating);
                     Log.d(TAG, "ArrayListSize:" + businesses.size());
-                    Log.d(TAG, "ArrayList1:" + businesses.get(1).location().displayAddress().toString().replaceAll("\\[|\\]", "").replaceAll(", ","\t"));
+                    Log.d(TAG, "ArrayList1:" + businesses.get(1).location().displayAddress().toString().replaceAll("\\[|\\]", "").replaceAll(", ", "\t"));
                     // Update UI text with the searchResponse.
+
+
+                    imageUrlList.clear();
+                    nameList.clear();
+                    ratingList.clear();
+                    addressList.clear();
+                    for(Business item: businesses) {
+                        imageUrlList.add(item.imageUrl());
+                        nameList.add(item.name());
+                        ratingList.add(item.rating());
+                        addressList.add(new ArrayList<String>(item.location().displayAddress()));
+                    }
+                    adapter.notifyDataSetChanged();
                 }
                 @Override
                 public void onFailure(Throwable t) {

@@ -35,4 +35,5 @@ dependencies {
     compile 'com.yelp.clientlib:yelp-android:1.0.0'
     compile 'com.squareup.okio:okio:1.6.0'
     compile 'com.squareup.okhttp:okhttp:2.3.0'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 }
