@@ -4,6 +4,7 @@ package com.example.jhan.searchboxtry;
  * Created by jhan on 3/19/16.
  */
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
@@ -365,6 +367,15 @@ public class SearchFragment extends ListFragment {
             Log.d(TAG, "也哟: " + "IOException" + e);
         }
 
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        Object m = adapter.getItem(position);
+        Log.d(TAG, "object itme is" + m.toString());
+
+        Intent i = new Intent(getActivity(), DetailActivity.class);
+        startActivity(i);
     }
 
 }

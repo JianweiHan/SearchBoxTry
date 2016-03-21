@@ -8,6 +8,10 @@
         android:title="search"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="ifRoom" />
+    <item android:id="@+id/menu_item_placePicker"
+        android:title="pick a location"
+        android:icon="@drawable/searchicon"
+        app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/menu_item_sortDistace"
         android:title="@string/sortByDistance"
