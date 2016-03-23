@@ -48,6 +48,10 @@ import retrofit.Retrofit;
 
 public class SearchFragment extends ListFragment {
 
+    static ArrayList<Business> businessList = new ArrayList<Business>();
+    static String currentLat;
+    static String currentLong;
+
     static int[] initImage = new int[20];
     static String[] initName = new String[20];
     static String[] initRate = new String[20];
@@ -97,10 +101,10 @@ public class SearchFragment extends ListFragment {
 
 
 */
-    ArrayList<String> imageUrlList = new ArrayList<String>();
-    ArrayList<String> nameList = new ArrayList<String>();
-    ArrayList<Double> ratingList = new ArrayList<Double>();
-    ArrayList<ArrayList<String>> addressList = new ArrayList<>();
+   // ArrayList<String> imageUrlList = new ArrayList<String>();
+   // ArrayList<String> nameList = new ArrayList<String>();
+   // ArrayList<Double> ratingList = new ArrayList<Double>();
+   // ArrayList<ArrayList<String>> addressList = new ArrayList<>();
     String strTerm; //search term
     SimpleAdapter adapter;
 
@@ -184,17 +188,17 @@ public class SearchFragment extends ListFragment {
 
 
                 View view = super.getView(position, convertView, parent);
-                if(imageUrlList.size() > 0) {
-                    if(imageUrlList.size() > position) {
+                if(businessList.size() > 0) {
+                    if(businessList.size() > position) {
                         ImageLoader imageLoader = ImageLoader.getInstance();
                         ImageView im = (ImageView) view.findViewById(R.id.image);
-                        imageLoader.displayImage(imageUrlList.get(position), im);
+                        imageLoader.displayImage(businessList.get(position).imageUrl(), im);
 
                         TextView nameView = (TextView) view.findViewById(R.id.name);
-                        nameView.setText(nameList.get(position));
+                        nameView.setText(businessList.get(position).name());
 
                         TextView rateView = (TextView) view.findViewById(R.id.rate);
-                        rateView.setText(ratingList.get(position).toString());
+                        rateView.setText(businessList.get(position).rating().toString());
 
                         TextView addressView = (TextView) view.findViewById(R.id.address);
                         /*
@@ -207,7 +211,7 @@ public class SearchFragment extends ListFragment {
                         }
                         addressView.setText(addressShow);
                         */
-                        addressView.setText(addressList.get(position).toString().replaceAll("\\[|\\]", "").replaceAll(", USA", ""));
+                        addressView.setText(businessList.get(position).location().displayAddress().toString().replaceAll("\\[|\\]", "").replaceAll(", USA", ""));
                     }
                     else {  // if there are less than 20 items return from yelp api, display the default image
                         ImageLoader imageLoader = ImageLoader.getInstance();
@@ -243,7 +247,7 @@ public class SearchFragment extends ListFragment {
         menuInflater.inflate(R.menu.fragment_search_menu, menu);
 
         //1. search menu
-        MenuItem searchItem = menu.findItem(R.id.menu_item_search);
+        final MenuItem searchItem = menu.findItem(R.id.menu_item_search);
         final SearchView searchView = (SearchView) searchItem.getActionView();
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -254,6 +258,7 @@ public class SearchFragment extends ListFragment {
                 //updateItems();
                 strTerm = s;
                 yelpSearch (strTerm, 0);
+                searchView.onActionViewCollapsed();
                 return true;
             }
 
@@ -267,8 +272,8 @@ public class SearchFragment extends ListFragment {
         searchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //String query = QueryPreferences.getStoredQuery(getActivity());
-                //searchView.setQuery(query, false);
+                String query = QueryPreferences.getStoredQuery(getActivity());
+                searchView.setQuery(query, false);
             }
         });
 
@@ -335,6 +340,9 @@ public class SearchFragment extends ListFragment {
                     Log.d(TAG, "也哟: " + "成功内" + searchResponse);
 
                     int totalNumberOfResult = searchResponse.total();
+                    businessList.clear();
+                    businessList = searchResponse.businesses();
+
                     ArrayList<Business> businesses = searchResponse.businesses();
 
 
@@ -347,7 +355,7 @@ public class SearchFragment extends ListFragment {
                     Log.d(TAG, "ArrayList1:" + businesses.get(1).location().displayAddress().toString().replaceAll("\\[|\\]", "").replaceAll(", ", "\t"));
                     // Update UI text with the searchResponse.
 
-
+                    /*
                     imageUrlList.clear();
                     nameList.clear();
                     ratingList.clear();
@@ -358,6 +366,7 @@ public class SearchFragment extends ListFragment {
                         ratingList.add(item.rating());
                         addressList.add(new ArrayList<String>(item.location().displayAddress()));
                     }
+                    */
                     adapter.notifyDataSetChanged();
                 }
                 @Override
@@ -381,7 +390,12 @@ public class SearchFragment extends ListFragment {
         Object m = adapter.getItem(position);
         Log.d(TAG, "object itme is" + m.toString());
 
+        //Intent i = new Intent(getActivity(), DetailActivity.class);
         Intent i = new Intent(getActivity(), DetailActivity.class);
+        if(businessList.size() > 0) {
+            i.putExtra("BUSINESS_DATA",businessList.get(position));
+        }
+        //i.putExtra("ITEM_NUMBER",position);
         startActivity(i);
     }
 

@@ -1,5 +1,6 @@
 package com.example.jhan.searchboxtry;
 
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Bundle;
@@ -17,6 +18,11 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        //set actionbar icon
+        ActionBar ab =getSupportActionBar();
+        ab.setDisplayShowHomeEnabled(true);
+        ab.setIcon(R.mipmap.ic_launcher);
 
         //image loader
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
