@@ -51,6 +51,7 @@ public class DetailActivity extends AppCompatActivity {
             bundle.putSerializable("BUSINESS_DATA", business);
             fragment.setArguments(bundle);
 
+
             fm.beginTransaction()
                     .add(R.id.detailfragment_container, fragment)
                     .commit();

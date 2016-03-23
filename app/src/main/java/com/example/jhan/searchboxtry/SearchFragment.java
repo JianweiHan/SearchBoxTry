@@ -391,11 +391,12 @@ public class SearchFragment extends ListFragment {
         Log.d(TAG, "object itme is" + m.toString());
 
         //Intent i = new Intent(getActivity(), DetailActivity.class);
-        Intent i = new Intent(getActivity(), DetailActivity.class);
+        Intent i = new Intent(getActivity(), DetailPagerActivity.class);
         if(businessList.size() > 0) {
-            i.putExtra("BUSINESS_DATA",businessList.get(position));
+            //i.putExtra("BUSINESS_DATA",businessList.get(position));
+            i.putExtra("BUSINESS_DATA", businessList);
         }
-        //i.putExtra("ITEM_NUMBER",position);
+        i.putExtra("ITEM_NUMBER", position);
         startActivity(i);
     }
 

@@ -3,6 +3,7 @@ package com.example.jhan.searchboxtry;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -37,10 +38,12 @@ public class DetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        //setRetainInstance(true);
         setHasOptionsMenu(true);
 
-        this.business =(Business)getArguments().getSerializable("BUSINESS_DATA");
+        this.business = (Business)getArguments().getSerializable("BUSINESS_DATA");
+
+
         /*
         businessList = (ArrayList<Business>)getActivity().getIntent().getSerializableExtra("BUSINESS_DATA");
 
