@@ -17,10 +17,13 @@ import java.util.ArrayList;
 public class DetailPagerActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
-    static private ArrayList<Business> businessList = new ArrayList<Business>();
+    //static private ArrayList<Business> businessList = new ArrayList<Business>();
+    private ArrayList<BusinessDataModel> businessList = new ArrayList<>();
     private int size = 20;
+    String parentActivity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_pager);
         //mViewPager = new ViewPager(this);
@@ -39,8 +42,9 @@ public class DetailPagerActivity extends AppCompatActivity {
 
 
         //get intent information
-        businessList = (ArrayList<Business>)getIntent().getSerializableExtra("BUSINESS_DATA");
+        businessList = (ArrayList<BusinessDataModel>)getIntent().getSerializableExtra("BUSINESS_DATA");
         int itemNumber = getIntent().getIntExtra("ITEM_NUMBER", -1);
+        parentActivity = getIntent().getStringExtra("PARENT_ACTIVITY");
 
 
 
@@ -52,11 +56,12 @@ public class DetailPagerActivity extends AppCompatActivity {
             public Fragment getItem(int position) {
                 Fragment detailFragment = DetailFragment.newInstance();
                 if(businessList != null && businessList.size() > 0) {
-                    Business businessItem = businessList.get(position);
+                    BusinessDataModel businessItem = businessList.get(position);
                     Log.d("getItem之内", "position：" + position);
                     //set detailFgrament arguments
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("BUSINESS_DATA", businessItem);
+                    bundle.putString("PARENT_ACTIVITY",parentActivity );
                     detailFragment.setArguments(bundle);
                 }
                 else {
@@ -70,6 +75,10 @@ public class DetailPagerActivity extends AppCompatActivity {
 
             @Override
             public int getCount() {
+                if(businessList.size() > 0) {
+                    size = businessList.size();
+                }
+                Log.d("*******pager长度********",":" + size);
                 return size;
             }
         });

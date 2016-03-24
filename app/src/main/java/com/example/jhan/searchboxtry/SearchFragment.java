@@ -32,6 +32,7 @@ import com.yelp.clientlib.connection.YelpAPI;
 import com.yelp.clientlib.connection.YelpAPIFactory;
 import com.yelp.clientlib.entities.Business;
 import com.yelp.clientlib.entities.SearchResponse;
+import com.yelp.clientlib.entities.options.CoordinateOptions;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,9 +49,9 @@ import retrofit.Retrofit;
 
 public class SearchFragment extends ListFragment {
 
-    static ArrayList<Business> businessList = new ArrayList<Business>();
-    static String currentLat;
-    static String currentLong;
+    static ArrayList<BusinessDataModel> businessList = new ArrayList<BusinessDataModel>();
+    static Double currentLat = Double.MAX_VALUE;
+    static Double currentLong = Double.MAX_VALUE;
 
     static int[] initImage = new int[20];
     static String[] initName = new String[20];
@@ -129,6 +130,8 @@ public class SearchFragment extends ListFragment {
             initAddress[i] = "";
         }
 
+        currentLat= getActivity().getIntent().getDoubleExtra("LATITUDE", Double.MAX_VALUE);
+        currentLong= getActivity().getIntent().getDoubleExtra("LONGITUDE", Double.MAX_VALUE);
 //        updateItems();
 //
 //        Handler responseHandler = new Handler();
@@ -192,13 +195,13 @@ public class SearchFragment extends ListFragment {
                     if(businessList.size() > position) {
                         ImageLoader imageLoader = ImageLoader.getInstance();
                         ImageView im = (ImageView) view.findViewById(R.id.image);
-                        imageLoader.displayImage(businessList.get(position).imageUrl(), im);
+                        imageLoader.displayImage(businessList.get(position).imgurl, im);
 
                         TextView nameView = (TextView) view.findViewById(R.id.name);
-                        nameView.setText(businessList.get(position).name());
+                        nameView.setText(businessList.get(position).bsname);
 
                         TextView rateView = (TextView) view.findViewById(R.id.rate);
-                        rateView.setText(businessList.get(position).rating().toString());
+                        rateView.setText(businessList.get(position).rating);
 
                         TextView addressView = (TextView) view.findViewById(R.id.address);
                         /*
@@ -211,7 +214,7 @@ public class SearchFragment extends ListFragment {
                         }
                         addressView.setText(addressShow);
                         */
-                        addressView.setText(businessList.get(position).location().displayAddress().toString().replaceAll("\\[|\\]", "").replaceAll(", USA", ""));
+                        addressView.setText(businessList.get(position).address.replaceAll("\\[|\\]", "").replaceAll(", USA", ""));
                     }
                     else {  // if there are less than 20 items return from yelp api, display the default image
                         ImageLoader imageLoader = ImageLoader.getInstance();
@@ -335,8 +338,16 @@ public class SearchFragment extends ListFragment {
 // locale params
         params.put("lang", "fr");
 
-
-        Call<SearchResponse> call = yelpAPI.search("San Jose", params);
+        Call<SearchResponse> call;
+        if(currentLat == Double.MAX_VALUE|| currentLong == Double.MAX_VALUE) {
+            call = yelpAPI.search("San Jose", params);
+        }
+        else {
+            CoordinateOptions coordinate = CoordinateOptions.builder()
+                    .latitude(currentLat)
+                    .longitude(currentLong).build();
+            call = yelpAPI.search(coordinate, params);
+        }
         try{
             Callback<SearchResponse> callback = new Callback<SearchResponse>() {
                 @Override
@@ -346,9 +357,24 @@ public class SearchFragment extends ListFragment {
 
                     int totalNumberOfResult = searchResponse.total();
                     businessList.clear();
-                    businessList = searchResponse.businesses();
 
                     ArrayList<Business> businesses = searchResponse.businesses();
+                    for(Business businessItem: businesses) {
+                        BusinessDataModel bsModel = new BusinessDataModel();
+                        bsModel.bsname = businessItem.name();
+                        bsModel.rating = businessItem.rating().toString();
+                        bsModel.imgurl = businessItem.imageUrl();
+                        bsModel.ratingimgurl = businessItem.ratingImgUrlLarge();
+                        bsModel.reviewcount = businessItem.reviewCount();
+                        bsModel.mapurl = "https://maps.googleapis.com/maps/api/staticmap?center=" + businessItem.location().coordinate().latitude() + "," + businessItem.location().coordinate().longitude() + "&zoom=20&size=2600x300&maptype=roadmap&markers=color:red%7Clabel:name%7C" + businessItem.location().coordinate().latitude() + "," + businessItem.location().coordinate().longitude();
+                        bsModel.address = businessItem.location().displayAddress().toString();
+                        bsModel.phone = businessItem.phone();
+                        bsModel.snippetimagerul = businessItem.snippetImageUrl();
+                        bsModel.snippettext = businessItem.snippetText();
+                        bsModel.latitude = businessItem.location().coordinate().latitude().toString();
+                        bsModel.longtitude = businessItem.location().coordinate().longitude().toString();
+                        businessList.add(bsModel);
+                    }
 
 
                     String businessName = businesses.get(0).name();  // "JapaCurry Truck"
@@ -392,6 +418,9 @@ public class SearchFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
+        if(businessList.size() == 0) {
+            return;
+        }
         Object m = adapter.getItem(position);
         Log.d(TAG, "object itme is" + m.toString());
 
@@ -402,6 +431,7 @@ public class SearchFragment extends ListFragment {
             i.putExtra("BUSINESS_DATA", businessList);
         }
         i.putExtra("ITEM_NUMBER", position);
+        i.putExtra("PARENT_ACTIVITY", "search");
         startActivity(i);
     }
 

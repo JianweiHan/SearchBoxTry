@@ -22,9 +22,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //create a table name location with two column(_id, latlng)
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table business (_id integer primary key autoincrement, name String, " +
-                "ratingimageurl String, reviewcount integer, mapurl String, address String, " +
-                "phone String, snippetimageurl String, snippettext String)");
+        db.execSQL("create table if not exists business2 (_id integer primary key autoincrement, name String, " +
+                "rate Sting, imageurl String, ratingimageurl String, reviewcount integer, mapurl String, address String, " +
+                "phone String, snippetimageurl String, snippettext String, latitude String, longitude String)");
     }
 
     @Override
@@ -33,9 +33,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //insert data into location table
-    public long insertLatlng(String name, String ratingimageurl, int reviewcount, String mapurl, String address, String phone, String snippetimageurl, String snippettext) {
+    public long insertLatlng(String name, String rate, String imageurl, String ratingimageurl, int reviewcount, String mapurl, String address, String phone, String snippetimageurl, String snippettext, String latitude, String longitude) {
         ContentValues cv = new ContentValues();
         cv.put("name", name);
+        cv.put("rate", rate);
+        cv.put("imageurl", imageurl);
         cv.put("ratingimageurl", ratingimageurl);
         cv.put("reviewcount", reviewcount);
         cv.put("mapurl", mapurl);
@@ -43,7 +45,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("phone", phone);
         cv.put("snippetimageurl", snippetimageurl);
         cv.put("snippettext", snippettext);
-        return getWritableDatabase().insert("business", null, cv);
+        cv.put("latitude", latitude);
+        cv.put("longitude", longitude);
+        return getWritableDatabase().insert("business2", null, cv);
     }
 
     //query the table

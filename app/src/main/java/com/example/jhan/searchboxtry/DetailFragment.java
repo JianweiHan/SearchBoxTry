@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,9 +35,10 @@ import java.util.List;
  */
 public class DetailFragment extends Fragment {
 
-    private Business business;
+    private BusinessDataModel business;
     DatabaseHelper helper;
     String mapUrl;
+    String parentActivity;
 
     public static DetailFragment newInstance() {
         return new DetailFragment();
@@ -49,9 +51,9 @@ public class DetailFragment extends Fragment {
         //setRetainInstance(true);
         setHasOptionsMenu(true);
 
-        this.business = (Business)getArguments().getSerializable("BUSINESS_DATA");
-
-
+        this.business = (BusinessDataModel)getArguments().getSerializable("BUSINESS_DATA");
+        this.parentActivity = getArguments().getString("PARENT_ACTIVITY");
+        Log.d("父亲*********", parentActivity);
         /*
         businessList = (ArrayList<Business>)getActivity().getIntent().getSerializableExtra("BUSINESS_DATA");
 
@@ -73,48 +75,48 @@ public class DetailFragment extends Fragment {
         if(business != null) {
 
             TextView nameView = (TextView)v.findViewById(R.id.name_detail);
-            nameView.setText(business.name());
+            nameView.setText(business.bsname);
 
             ImageLoader imageLoader = ImageLoader.getInstance();
             ImageView ratingImage = (ImageView)v.findViewById(R.id.ratingImage_detail);
-            imageLoader.displayImage(business.ratingImgUrlLarge(), ratingImage);
+            imageLoader.displayImage(business.ratingimgurl, ratingImage);
 
             TextView reviewView = (TextView)v.findViewById(R.id.reviews_detail);
-            reviewView.setText(business.reviewCount() + " Reviews");
+            reviewView.setText(business.reviewcount + " Reviews");
 
             imageLoader = ImageLoader.getInstance();
             ImageView mapImage = (ImageView)v.findViewById(R.id.mapImage_detail);
-            mapUrl = "https://maps.googleapis.com/maps/api/staticmap?center=" + business.location().coordinate().latitude() + "," + business.location().coordinate().longitude() + "&zoom=20&size=2600x300&maptype=roadmap&markers=color:red%7Clabel:name%7C" + business.location().coordinate().latitude() + "," + business.location().coordinate().longitude();
+            mapUrl = "https://maps.googleapis.com/maps/api/staticmap?center=" + business.latitude + "," + business.longtitude + "&zoom=20&size=2600x300&maptype=roadmap&markers=color:red%7Clabel:name%7C" + business.latitude + "," + business.longtitude;
             imageLoader.displayImage(mapUrl, mapImage);
 
             TextView addressView = (TextView)v.findViewById(R.id.address_detail);
-            addressView.setText(business.location().displayAddress().toString().replaceAll("\\[|\\]", "").replaceAll(", USA", ""));
+            addressView.setText(business.address.replaceAll("\\[|\\]", "").replaceAll(", USA", ""));
 
             TextView phoneView = (TextView)v.findViewById(R.id.phone_detail);
-            phoneView.setText("Phone: " + business.phone());
+            phoneView.setText("Phone: " + business.phone);
 
             imageLoader = ImageLoader.getInstance();
             ImageView snippetImage = (ImageView)v.findViewById(R.id.snippetImage_detail);
-            imageLoader.displayImage(business.snippetImageUrl(), snippetImage);
+            imageLoader.displayImage(business.snippetimagerul, snippetImage);
 
             TextView snippetTextView = (TextView)v.findViewById(R.id.snippetText_detail);
-            snippetTextView.setText(business.snippetText());
+            snippetTextView.setText(business.snippettext);
 
 
             helper = new DatabaseHelper(this.getContext());
             CheckBox heart = (CheckBox) v.findViewById(R.id.checkBox);
-            if(existed(business.location().displayAddress().toString().replaceAll("\\[|\\]", "").replaceAll(", USA", ""))) {
+            if (existed(business.address.replaceAll("\\[|\\]", "").replaceAll(", USA", ""))) {
                 heart.setChecked(true);
             }
             heart.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (((CheckBox) v).isChecked()) {
-                        long returnresult = helper.insertLatlng(business.name(),business.ratingImgUrlLarge(),business.reviewCount(),mapUrl,
-                                business.location().displayAddress().toString().replaceAll("\\[|\\]", "").replaceAll(", USA", ""),business.phone(),business.snippetImageUrl(),business.snippetText());
+                        long returnresult = helper.insertLatlng(business.bsname,business.rating, business.imgurl, business.ratingimgurl,business.reviewcount,mapUrl,
+                                business.address.replaceAll("\\[|\\]", "").replaceAll(", USA", ""),business.phone,business.snippetimagerul,business.snippettext, business.latitude, business.longtitude);
                     }
                     else {
-                        helper.getWritableDatabase().delete("business","address = " + "\'"+   business.location().displayAddress().toString().replaceAll("\\[|\\]", "").replaceAll(", USA", "") +"\'",null);
+                        helper.getWritableDatabase().delete("business2","address = " + "\'"+   business.address.replaceAll("\\[|\\]", "").replaceAll(", USA", "") +"\'",null);
                     }
                 }
             });
@@ -133,8 +135,16 @@ public class DetailFragment extends Fragment {
 
 
         if (id == android.R.id.home) {
-            Intent parentIntentSearch = new Intent(getActivity(), SearchActivity.class);
-            startActivity(parentIntentSearch);
+
+            Log.d("父亲*********按键内", parentActivity);
+           if(parentActivity.equals("favorite")) {
+                Intent parentIntentSearch = new Intent(getActivity(), FavoriteActivity.class);
+                startActivity(parentIntentSearch);
+            }
+            else {
+                Intent parentIntentSearch = new Intent(getActivity(), SearchActivity.class);
+                startActivity(parentIntentSearch);
+            }
             return true;
         }
 
@@ -143,21 +153,28 @@ public class DetailFragment extends Fragment {
     }
 
     public boolean existed (String address) {
-        DatabaseHelper dbhelper = new DatabaseHelper(this.getContext());;
-        Cursor resultset = dbhelper.getReadableDatabase().query("business", null, "address =" + "\'" + address + "\'", null, null, null, null);
-        resultset.moveToFirst();
-        if (resultset.getCount() != 0) {
-            //resultset.moveToFirst();
-           // Log.d("resultset.getCount();", ":" + resultset.getCount());
-            String result0 = resultset.getString(1);
-            //resultset.getCount();
-           Log.d("query结果",":"+ result0);
-           // Log.d("resultset.getCount();",":" + resultset.getCount());
-            return true;
+        DatabaseHelper dbhelper = new DatabaseHelper(this.getContext());
+        try {
+            Cursor resultset = dbhelper.getReadableDatabase().query("business2", null, "address =" + "\'" + address + "\'", null, null, null, null);
+            resultset.moveToFirst();
+            if (resultset.getCount() != 0) {
+                //resultset.moveToFirst();
+                // Log.d("resultset.getCount();", ":" + resultset.getCount());
+                String result0 = resultset.getString(1);
+                //resultset.getCount();
+                Log.d("query结果",":"+ result0);
+                // Log.d("resultset.getCount();",":" + resultset.getCount());
+                return true;
+            }
+            else {
+                return false;
+            }
         }
-        else {
+        catch(Exception e) {
+
             return false;
         }
+
     }
 
 }

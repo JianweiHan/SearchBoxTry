@@ -26,11 +26,11 @@ public class FavoriteActivity extends AppCompatActivity {
 
         //set actionbar icon
         ActionBar ab = getSupportActionBar();
-        ab.setDisplayShowTitleEnabled(false);
+        //ab.setDisplayShowTitleEnabled(false);
         ab.setDisplayShowHomeEnabled(true);
         ab.setIcon(R.mipmap.ic_launcher);
         ab.setDisplayHomeAsUpEnabled(true);
-        //ab.setTitle("Back");
+        ab.setTitle("My Favorite");
 
         //image loader
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();

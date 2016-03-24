@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -69,11 +70,21 @@ public class PlacePickerActivity extends AppCompatActivity {
                 //Log.d(TAG, "onActivityResult: " + place.getLatLng().toString());
                 Place placepick = PlacePicker.getPlace(data, this);
                 LatLng latlng = placepick.getLatLng();
-                String toastMsg = String.format("Place: %s", latlng.toString());
+                Double latitude = placepick.getLatLng().latitude;
+                Double longitude = placepick.getLatLng().longitude;
 
-//                TextView text = (TextView) findViewById(R.id.textView2);
-//                text.setText(toastMsg);
-                Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
+
+                //start search activity
+                Intent i = new Intent(this, SearchActivity.class);
+                i.putExtra("LATITUDE", latitude);
+                i.putExtra("LONGITUDE", longitude);
+                startActivity(i);
+                for(int j = 0; j < 3; j++) {
+                    String toastMsg = String.format("Please set keyword!\nPlace: %s", latlng.toString());
+                    Toast toast = Toast.makeText(this, toastMsg, Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL, 0, 0);
+                    toast.show();
+                }
                 //add intent to send the LatLng to another activity
 //                Intent intent = new Intent(PlacePickerActivity.this, LocationReceiver.class);
 ////                Bundle b = new Bundle();

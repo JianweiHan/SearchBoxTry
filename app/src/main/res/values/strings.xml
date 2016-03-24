@@ -3,8 +3,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="sortByDistance">SortByDistance</string>
-    <string name="sortByRelevance">SortByRelevance</string>
+    <string name="sortByDistance">By Distance</string>
+    <string name="sortByRelevance">By Relevance</string>
     <string name="google_app_id">941339360803</string>
-    <string name="favorite">favorite</string>
+    <string name="favorite">My Favorite</string>
 </resources>
