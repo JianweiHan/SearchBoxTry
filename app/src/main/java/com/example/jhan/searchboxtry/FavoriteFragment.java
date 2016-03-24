@@ -3,6 +3,8 @@ package com.example.jhan.searchboxtry;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -198,22 +200,39 @@ public class FavoriteFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        if(businessList.get(position).bsname.equals("")) {
-            return;
-        }
-        Object m = adapter.getItem(position);
-        Log.d(TAG, "object itme is" + m.toString());
+        if (getActivity().findViewById(R.id.linearLayoutTwoPane) == null) {   /////for phone
 
-        //Intent i = new Intent(getActivity(), DetailActivity.class);
-        Intent i = new Intent(getActivity(), DetailPagerActivity.class);
-        if(businessList.size() > 0) {
-            //i.putExtra("BUSINESS_DATA",businessList.get(position));
-            i.putExtra("BUSINESS_DATA", businessList);
+            Object m = adapter.getItem(position);
+            Log.d(TAG, "object itme is" + m.toString());
+
+            //Intent i = new Intent(getActivity(), DetailActivity.class);
+            Intent i = new Intent(getActivity(), DetailPagerActivity.class);
+            if (businessList.size() > 0) {
+                //i.putExtra("BUSINESS_DATA",businessList.get(position));
+                i.putExtra("BUSINESS_DATA", businessList);
+            }
+            i.putExtra("ITEM_NUMBER", position);
+            i.putExtra("PARENT_ACTIVITY", "favorite");
+            startActivity(i);
+        } else {  //////for tablet
+            // create fragment manager, and load fragment
+            FragmentManager fm = getActivity().getSupportFragmentManager();
+
+            BusinessDataModel bsModel = businessList.get(position);
+
+            Fragment fragment = DetailFragment.newInstance();
+
+            //set argument for fragment
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("BUSINESS_DATA", bsModel);
+            bundle.putString("PARENT_ACTIVITY", "favorite");
+            fragment.setArguments(bundle);
+
+            fm.beginTransaction()
+                    .replace(R.id.detailFragmentContainer, fragment)
+                    .commit();
+
+
         }
-        i.putExtra("ITEM_NUMBER", position);
-        i.putExtra("PARENT_ACTIVITY", "favorite");
-        startActivity(i);
     }
-
-
 }

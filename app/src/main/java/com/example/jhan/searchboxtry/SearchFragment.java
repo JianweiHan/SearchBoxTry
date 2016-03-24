@@ -4,6 +4,7 @@ package com.example.jhan.searchboxtry;
  * Created by jhan on 3/19/16.
  */
 
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -12,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -418,21 +420,51 @@ public class SearchFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
+        Log.d("is attached", ":" + (getActivity().findViewById(R.id.linearLayoutTwoPane) == null));
+        //Log.d("当前view", ":" + getActivity().getWindow().getDecorView().findViewById(android.R.id.content).getId()+ "resouce:" + R.layout.twopane);
+
+
         if(businessList.size() == 0) {
             return;
         }
-        Object m = adapter.getItem(position);
-        Log.d(TAG, "object itme is" + m.toString());
+        if(getActivity().findViewById(R.id.linearLayoutTwoPane) == null) {   /////for phone
 
-        //Intent i = new Intent(getActivity(), DetailActivity.class);
-        Intent i = new Intent(getActivity(), DetailPagerActivity.class);
-        if(businessList.size() > 0) {
-            //i.putExtra("BUSINESS_DATA",businessList.get(position));
-            i.putExtra("BUSINESS_DATA", businessList);
+            Object m = adapter.getItem(position);
+            Log.d(TAG, "object itme is" + m.toString());
+
+            //Intent i = new Intent(getActivity(), DetailActivity.class);
+            Intent i = new Intent(getActivity(), DetailPagerActivity.class);
+            if(businessList.size() > 0) {
+                //i.putExtra("BUSINESS_DATA",businessList.get(position));
+                i.putExtra("BUSINESS_DATA", businessList);
+            }
+            i.putExtra("ITEM_NUMBER", position);
+            i.putExtra("PARENT_ACTIVITY", "search");
+            startActivity(i);
         }
-        i.putExtra("ITEM_NUMBER", position);
-        i.putExtra("PARENT_ACTIVITY", "search");
-        startActivity(i);
+        else {  //////for tablet
+            // create fragment manager, and load fragment
+            FragmentManager fm = getActivity().getSupportFragmentManager();
+
+            BusinessDataModel bsModel = businessList.get(position);
+
+                Fragment fragment = DetailFragment.newInstance();
+
+                //set argument for fragment
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("BUSINESS_DATA", bsModel);
+                bundle.putString("PARENT_ACTIVITY", "search");
+                fragment.setArguments(bundle);
+
+                fm.beginTransaction()
+                        .replace(R.id.detailFragmentContainer, fragment)
+                        .commit();
+
+
+        }
+
+
+
     }
 
 }
