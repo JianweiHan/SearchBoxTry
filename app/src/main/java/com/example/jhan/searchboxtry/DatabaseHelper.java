@@ -22,7 +22,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //create a table name location with two column(_id, latlng)
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table location (_id integer primary key autoincrement, latlng String)");
+        db.execSQL("create table business (_id integer primary key autoincrement, name String, " +
+                "ratingimageurl String, reviewcount integer, mapurl String, address String, " +
+                "phone String, snippetimageurl String, snippettext String)");
     }
 
     @Override
@@ -31,10 +33,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //insert data into location table
-    public long insertLatlng(String latlng) {
+    public long insertLatlng(String name, String ratingimageurl, int reviewcount, String mapurl, String address, String phone, String snippetimageurl, String snippettext) {
         ContentValues cv = new ContentValues();
-        cv.put("latlng", latlng);
-        return getWritableDatabase().insert("location", null, cv);
+        cv.put("name", name);
+        cv.put("ratingimageurl", ratingimageurl);
+        cv.put("reviewcount", reviewcount);
+        cv.put("mapurl", mapurl);
+        cv.put("address", address);
+        cv.put("phone", phone);
+        cv.put("snippetimageurl", snippetimageurl);
+        cv.put("snippettext", snippettext);
+        return getWritableDatabase().insert("business", null, cv);
     }
 
     //query the table

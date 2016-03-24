@@ -15,10 +15,15 @@
 
     <item android:id="@+id/menu_item_sortDistace"
         android:title="@string/sortByDistance"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
     <item android:id="@+id/menu_item_sortRelevance"
         android:title="@string/sortByRelevance"
         app:showAsAction="never" />
+
+
+    <item android:id="@+id/menu_item_favoriteActivity"
+        android:title="@string/favorite"
+        app:showAsAction="ifRoom" />
 
 </menu>

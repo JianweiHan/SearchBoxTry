@@ -307,6 +307,11 @@ public class SearchFragment extends ListFragment {
             startActivity(i);
             return true;
         }
+        if(id == R.id.menu_item_favoriteActivity) {
+            Intent i = new Intent(getActivity(), FavoriteActivity.class);
+            startActivity(i);
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }

@@ -18,16 +18,25 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".SearchActivity">
+        <activity
+            android:name=".SearchActivity"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DetailActivity" />
-        <activity android:name=".PlacePickerActivity" />
-        <activity android:name=".DetailPagerActivity"></activity>
+        <activity
+            android:name=".DetailActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".PlacePickerActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".DetailPagerActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity android:name=".FavoriteActivity"></activity>
     </application>
 
 </manifest>

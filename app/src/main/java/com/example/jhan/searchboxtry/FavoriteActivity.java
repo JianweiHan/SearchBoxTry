@@ -1,24 +1,17 @@
 package com.example.jhan.searchboxtry;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.res.Configuration;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Display;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-public class SearchActivity extends AppCompatActivity {
-
+public class FavoriteActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +23,14 @@ public class SearchActivity extends AppCompatActivity {
         else {
             setContentView(R.layout.activity_search);
         }
+
         //set actionbar icon
-        ActionBar ab =getSupportActionBar();
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayShowTitleEnabled(false);
         ab.setDisplayShowHomeEnabled(true);
         ab.setIcon(R.mipmap.ic_launcher);
+        ab.setDisplayHomeAsUpEnabled(true);
+        //ab.setTitle("Back");
 
         //image loader
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
@@ -70,7 +67,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     protected Fragment createFragment() {
-        return SearchFragment.newInstance();
+        return FavoriteFragment.newInstance();
     }
 
     public boolean isTablet()
@@ -105,5 +102,4 @@ public class SearchActivity extends AppCompatActivity {
         return false;
 
     }
-
 }
