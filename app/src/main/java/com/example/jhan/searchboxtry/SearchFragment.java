@@ -259,7 +259,6 @@ public class SearchFragment extends ListFragment {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 Log.d(TAG, "QueryTextSubmit: " + s);
-                QueryPreferences.setStoredQuery(getActivity(), s);
                 //updateItems();
                 strTerm = s;
                 yelpSearch (strTerm, 0);
@@ -277,8 +276,7 @@ public class SearchFragment extends ListFragment {
         searchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String query = QueryPreferences.getStoredQuery(getActivity());
-                searchView.setQuery(query, false);
+
             }
         });
 
@@ -312,12 +310,13 @@ public class SearchFragment extends ListFragment {
             startActivity(i);
             return true;
         }
+        /*
         if(id == R.id.menu_item_favoriteActivity) {
             Intent i = new Intent(getActivity(), FavoriteActivity.class);
             startActivity(i);
             return true;
         }
-
+        */
         return super.onOptionsItemSelected(item);
     }
 

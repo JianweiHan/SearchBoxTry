@@ -26,7 +26,7 @@ public class PlacePickerActivity extends AppCompatActivity {
     private static final int PLACE_PICKER_REQUEST = 1;
 
     private static final LatLngBounds BOUNDS_MOUNTAIN_VIEW = new LatLngBounds(
-            new LatLng(37.398160, -122.180831), new LatLng(37.430610, -121.972090));
+            new LatLng(37.432335, -122.0), new LatLng(37.464785, -121.791259));
 
     private static final String TAG = PlacePickerActivity.class.getSimpleName();
 

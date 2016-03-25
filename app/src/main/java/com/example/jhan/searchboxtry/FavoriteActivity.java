@@ -1,17 +1,31 @@
 package com.example.jhan.searchboxtry;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class FavoriteActivity extends AppCompatActivity {
+
+    private DrawerLayout mydrawerLayout;
+    private ListView mydrawerList;
+    private String[] titles = new String[2];
+    private ActionBarDrawerToggle mytoggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,13 +38,46 @@ public class FavoriteActivity extends AppCompatActivity {
             setContentView(R.layout.activity_search);
         }
 
+        titles[0] = "Search";
+        titles[1] = "My Favorite";
+        mydrawerLayout = (DrawerLayout) findViewById(R.id.mydrawer);
+        mydrawerList = (ListView) findViewById(R.id.drawerlist);
+        mydrawerList.setAdapter(new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, titles));
+        mydrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView parent, View view, int position, long id) {
+                if (position == 0) {
+                    Intent i = new Intent(FavoriteActivity.this, SearchActivity.class);
+                    startActivity(i);
+                }
+                if(position == 1) {
+                    mydrawerLayout.closeDrawers();
+                }
+            }
+        });
+
         //set actionbar icon
-        ActionBar ab = getSupportActionBar();
-        //ab.setDisplayShowTitleEnabled(false);
+        ActionBar ab =getSupportActionBar();
         ab.setDisplayShowHomeEnabled(true);
         ab.setIcon(R.mipmap.ic_launcher);
-        ab.setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         ab.setTitle("My Favorite");
+
+        //set toggle
+        mytoggle = new ActionBarDrawerToggle(this, mydrawerLayout, R.string.opendrawer, R.string.closedrawer) {
+            public void onDrawerOpend(View view) {
+                super.onDrawerOpened(view);
+                invalidateOptionsMenu();
+            }
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu();
+            }
+        };
+        mytoggle.setDrawerIndicatorEnabled(true);
+        mydrawerLayout.setDrawerListener(mytoggle);
 
         //image loader
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
@@ -70,6 +117,26 @@ public class FavoriteActivity extends AppCompatActivity {
         return FavoriteFragment.newInstance();
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (mytoggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mytoggle.syncState();
+    }
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mytoggle.onConfigurationChanged(newConfig);
+    }
     public boolean isTablet()
     {
         // Verifies if the Generalized Size of the device is XLARGE to be

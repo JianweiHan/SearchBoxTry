@@ -126,20 +126,6 @@ public class FavoriteFragment extends ListFragment {
     }
 
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-
-        if (id == android.R.id.home) {
-            Intent parentIntentSearch = new Intent(getActivity(), SearchActivity.class);
-            startActivity(parentIntentSearch);
-            return true;
-        }
-
-
-        return super.onOptionsItemSelected(item);
-    }
 
     private void findFavoriteData() {
         DatabaseHelper dbhelper = new DatabaseHelper(this.getContext());

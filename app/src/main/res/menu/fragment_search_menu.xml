@@ -22,8 +22,8 @@
         app:showAsAction="never" />
 
 
-    <item android:id="@+id/menu_item_favoriteActivity"
+    <!--item android:id="@+id/menu_item_favoriteActivity"
         android:title="@string/favorite"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom" /-->
 
 </menu>

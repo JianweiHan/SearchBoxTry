@@ -2,7 +2,9 @@ package com.example.jhan.searchboxtry;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,27 +15,82 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
-
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
+import android.support.v7.app.ActionBarDrawerToggle;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class SearchActivity extends AppCompatActivity {
 
-
+    private DrawerLayout mydrawerLayout;
+    private ListView mydrawerList;
+    private String[] titles = new String[2];
+    private ActionBarDrawerToggle mytoggle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             setContentView(R.layout.twopane);
+            mydrawerLayout = (DrawerLayout) findViewById(R.id.mydrawerTwo);
+            mydrawerList = (ListView) findViewById(R.id.drawerlistTwo);
         }
         else {
             setContentView(R.layout.activity_search);
+            mydrawerLayout = (DrawerLayout) findViewById(R.id.mydrawer);
+            mydrawerList = (ListView) findViewById(R.id.drawerlist);
         }
+
+
+        titles[0] = "Search";
+        titles[1] = "My Favorite";
+
+        mydrawerList.setAdapter(new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, titles));
+        mydrawerList.setOnItemClickListener(new ListView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView parent, View view, int position, long id) {
+                if(position == 0) {
+                    mydrawerLayout.closeDrawers();
+                    Log.d("******drawer*****88","close");
+                }
+                if(position == 1) {
+                    Log.d("******drawer*****88","favorite");
+                    Intent i = new Intent(SearchActivity.this, FavoriteActivity.class);
+                    startActivity(i);
+                }
+            }
+        });
+
+
         //set actionbar icon
         ActionBar ab =getSupportActionBar();
         ab.setDisplayShowHomeEnabled(true);
         ab.setIcon(R.mipmap.ic_launcher);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+
+        //set toggle
+        mytoggle = new ActionBarDrawerToggle(this, mydrawerLayout, R.string.opendrawer, R.string.closedrawer) {
+            public void onDrawerOpend(View view) {
+                super.onDrawerOpened(view);
+                invalidateOptionsMenu();
+            }
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu();
+            }
+        };
+        mytoggle.setDrawerIndicatorEnabled(true);
+        mydrawerLayout.setDrawerListener(mytoggle);
+
+
 
         //image loader
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
@@ -73,6 +130,26 @@ public class SearchActivity extends AppCompatActivity {
         return SearchFragment.newInstance();
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (mytoggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mytoggle.syncState();
+    }
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mytoggle.onConfigurationChanged(newConfig);
+    }
     public boolean isTablet()
     {
         // Verifies if the Generalized Size of the device is XLARGE to be

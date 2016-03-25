@@ -7,4 +7,6 @@
     <string name="sortByRelevance">By Relevance</string>
     <string name="google_app_id">941339360803</string>
     <string name="favorite">My Favorite</string>
+    <string name="opendrawer">Open</string>
+    <string name="closedrawer">Close</string>
 </resources>
