@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -177,6 +178,7 @@ public class SearchFragment extends ListFragment {
             hm.put("image", Integer.toString(initImage[i]));
             aList.add(hm);
         }
+
 
         // Keys used in Hashmap
         String[] from = { "image","name","rate", "address" };

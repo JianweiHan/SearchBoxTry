@@ -33,15 +33,17 @@ public class FavoriteActivity extends AppCompatActivity {
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             setContentView(R.layout.twopane);
+            mydrawerLayout = (DrawerLayout) findViewById(R.id.mydrawerTwo);
+            mydrawerList = (ListView) findViewById(R.id.drawerlistTwo);
         }
         else {
             setContentView(R.layout.activity_search);
+            mydrawerLayout = (DrawerLayout) findViewById(R.id.mydrawer);
+            mydrawerList = (ListView) findViewById(R.id.drawerlist);
         }
 
         titles[0] = "Search";
         titles[1] = "My Favorite";
-        mydrawerLayout = (DrawerLayout) findViewById(R.id.mydrawer);
-        mydrawerList = (ListView) findViewById(R.id.drawerlist);
         mydrawerList.setAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, titles));
         mydrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
