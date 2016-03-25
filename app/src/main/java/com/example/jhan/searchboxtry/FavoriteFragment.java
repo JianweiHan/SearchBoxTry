@@ -200,6 +200,12 @@ public class FavoriteFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
+        if(businessList.size() == 0) {
+            return;
+        }
+        if(businessList.get(0).bsname.equals("")) {
+            return;
+        }
         if (getActivity().findViewById(R.id.linearLayoutTwoPane) == null) {   /////for phone
 
             Object m = adapter.getItem(position);
