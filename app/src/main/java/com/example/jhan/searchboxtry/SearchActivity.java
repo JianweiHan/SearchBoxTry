@@ -126,6 +126,7 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
+
     protected Fragment createFragment() {
         return SearchFragment.newInstance();
     }

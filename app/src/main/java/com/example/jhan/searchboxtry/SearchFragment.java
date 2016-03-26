@@ -60,56 +60,8 @@ public class SearchFragment extends ListFragment {
     static String[] initName = new String[20];
     static String[] initRate = new String[20];
     static String[] initAddress = new String[20];
-/*
-    // Array of strings storing country names
-    String[] countries = new String[] {
-            "India",
-            "Pakistan",
-            "Sri Lanka",
-            "China",
-            "Bangladesh",
-            "Nepal",
-            "Afghanistan",
-            "North Korea",
-            "South Korea",
-            "Japan"
-    };
 
-    // Array of integers points to images stored in /res/drawable/
-    int[] flags = new int[]{
-            R.drawable.india,
-            R.drawable.pakistan,
-            R.drawable.srilanka,
-            R.drawable.china,
-            R.drawable.bangladesh,
-            R.drawable.nepal,
-            R.drawable.afghanistan,
-            R.drawable.nkorea,
-            R.drawable.skorea,
-            R.drawable.japan
-    };
-
-    // Array of strings to store currencies
-    String[] currency = new String[]{
-            "Indian Rupee",
-            "Pakistani Rupee",
-            "Sri Lankan Rupee",
-            "Renminbi",
-            "Bangladeshi Taka",
-            "Nepalese Rupee",
-            "Afghani",
-            "North Korean Won",
-            "South Korean Won",
-            "Japanese Yen"
-    };
-
-
-*/
-   // ArrayList<String> imageUrlList = new ArrayList<String>();
-   // ArrayList<String> nameList = new ArrayList<String>();
-   // ArrayList<Double> ratingList = new ArrayList<Double>();
-   // ArrayList<ArrayList<String>> addressList = new ArrayList<>();
-    String strTerm; //search term
+    static String strTerm; //search term
     SimpleAdapter adapter;
 
 
@@ -133,37 +85,19 @@ public class SearchFragment extends ListFragment {
             initAddress[i] = "";
         }
 
-        currentLat= getActivity().getIntent().getDoubleExtra("LATITUDE", Double.MAX_VALUE);
-        currentLong= getActivity().getIntent().getDoubleExtra("LONGITUDE", Double.MAX_VALUE);
-//        updateItems();
-//
-//        Handler responseHandler = new Handler();
-//        mThumbnailDownloader = new ThumbnailDownloader<>(responseHandler);
-//        mThumbnailDownloader.setThumbnailDownloadListener(
-//                new ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder>() {
-//                    @Override
-//                    public void onThumbnailDownloaded(PhotoHolder photoHolder, Bitmap bitmap) {
-//                        Drawable drawable = new BitmapDrawable(getResources(), bitmap);
-//                        photoHolder.bindDrawable(drawable);
-//                    }
-//                }
-//        );
-//        mThumbnailDownloader.start();
-//        mThumbnailDownloader.getLooper();
-//        Log.i(TAG, "Background thread started");
+
+        if(getActivity().getIntent().hasExtra("LATITUDE")) {
+            currentLat= getActivity().getIntent().getDoubleExtra("LATITUDE", Double.MAX_VALUE);
+            currentLong= getActivity().getIntent().getDoubleExtra("LONGITUDE", Double.MAX_VALUE);
+        }
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-       // View v = inflater.inflate(R.layout.fragment_search, container, false);
-//        mPhotoRecyclerView = (RecyclerView) v
-//                .findViewById(R.id.fragment_photo_gallery_recycler_view);
-//        mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-//
-//        setupAdapter();
 
-       // return v;
 
 
 
@@ -247,6 +181,8 @@ public class SearchFragment extends ListFragment {
 
 
     }
+
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
